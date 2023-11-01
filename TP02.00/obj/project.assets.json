@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Ale\\Documents\\rollandia\\Beca\\NeorisUTNBA\\GitTrabajosPracticosProfesorSB\\TPsSB\\TP02.01\\TP02.01.csproj",
-      "projectName": "TP02.01",
-      "projectPath": "C:\\Users\\Ale\\Documents\\rollandia\\Beca\\NeorisUTNBA\\GitTrabajosPracticosProfesorSB\\TPsSB\\TP02.01\\TP02.01.csproj",
+      "projectUniqueName": "C:\\Users\\Ale\\Documents\\rollandia\\Beca\\NeorisUTNBA\\GitTrabajosPracticosProfesorSB\\TPsSB\\TP02.00\\TP02.00.csproj",
+      "projectName": "TP02.00",
+      "projectPath": "C:\\Users\\Ale\\Documents\\rollandia\\Beca\\NeorisUTNBA\\GitTrabajosPracticosProfesorSB\\TPsSB\\TP02.00\\TP02.00.csproj",
       "packagesPath": "C:\\Users\\Ale\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Ale\\Documents\\rollandia\\Beca\\NeorisUTNBA\\GitTrabajosPracticosProfesorSB\\TPsSB\\TP02.01\\obj\\",
+      "outputPath": "C:\\Users\\Ale\\Documents\\rollandia\\Beca\\NeorisUTNBA\\GitTrabajosPracticosProfesorSB\\TPsSB\\TP02.00\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Ale\\AppData\\Roaming\\NuGet\\NuGet.Config",

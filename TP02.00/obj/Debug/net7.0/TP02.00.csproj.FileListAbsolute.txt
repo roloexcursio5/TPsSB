@@ -1,0 +1,14 @@
+C:\Users\Ale\Documents\rollandia\Beca\NeorisUTNBA\GitTrabajosPracticosProfesorSB\TPsSB\TP02.00\bin\Debug\net7.0\TP02.00.exe
+C:\Users\Ale\Documents\rollandia\Beca\NeorisUTNBA\GitTrabajosPracticosProfesorSB\TPsSB\TP02.00\bin\Debug\net7.0\TP02.00.deps.json
+C:\Users\Ale\Documents\rollandia\Beca\NeorisUTNBA\GitTrabajosPracticosProfesorSB\TPsSB\TP02.00\bin\Debug\net7.0\TP02.00.runtimeconfig.json
+C:\Users\Ale\Documents\rollandia\Beca\NeorisUTNBA\GitTrabajosPracticosProfesorSB\TPsSB\TP02.00\bin\Debug\net7.0\TP02.00.dll
+C:\Users\Ale\Documents\rollandia\Beca\NeorisUTNBA\GitTrabajosPracticosProfesorSB\TPsSB\TP02.00\bin\Debug\net7.0\TP02.00.pdb
+C:\Users\Ale\Documents\rollandia\Beca\NeorisUTNBA\GitTrabajosPracticosProfesorSB\TPsSB\TP02.00\obj\Debug\net7.0\TP02.00.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Ale\Documents\rollandia\Beca\NeorisUTNBA\GitTrabajosPracticosProfesorSB\TPsSB\TP02.00\obj\Debug\net7.0\TP02.00.AssemblyInfoInputs.cache
+C:\Users\Ale\Documents\rollandia\Beca\NeorisUTNBA\GitTrabajosPracticosProfesorSB\TPsSB\TP02.00\obj\Debug\net7.0\TP02.00.AssemblyInfo.cs
+C:\Users\Ale\Documents\rollandia\Beca\NeorisUTNBA\GitTrabajosPracticosProfesorSB\TPsSB\TP02.00\obj\Debug\net7.0\TP02.00.csproj.CoreCompileInputs.cache
+C:\Users\Ale\Documents\rollandia\Beca\NeorisUTNBA\GitTrabajosPracticosProfesorSB\TPsSB\TP02.00\obj\Debug\net7.0\TP02.00.dll
+C:\Users\Ale\Documents\rollandia\Beca\NeorisUTNBA\GitTrabajosPracticosProfesorSB\TPsSB\TP02.00\obj\Debug\net7.0\refint\TP02.00.dll
+C:\Users\Ale\Documents\rollandia\Beca\NeorisUTNBA\GitTrabajosPracticosProfesorSB\TPsSB\TP02.00\obj\Debug\net7.0\TP02.00.pdb
+C:\Users\Ale\Documents\rollandia\Beca\NeorisUTNBA\GitTrabajosPracticosProfesorSB\TPsSB\TP02.00\obj\Debug\net7.0\TP02.00.genruntimeconfig.cache
+C:\Users\Ale\Documents\rollandia\Beca\NeorisUTNBA\GitTrabajosPracticosProfesorSB\TPsSB\TP02.00\obj\Debug\net7.0\ref\TP02.00.dll
