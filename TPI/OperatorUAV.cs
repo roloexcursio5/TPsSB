@@ -2,14 +2,14 @@
 {
     internal class OperatorUAV : Operator//drones voladores de varias hélices
     {
-        public OperatorUAV()
+        public OperatorUAV(int IDautoincremental, Barracks barracks)
         {
-            uniqueID = UniqueID();
-            battery = new OperatorBattery(2000, 4000);  //mAh miliAmperios, 1000mAh = 1 hour use
+            uniqueID = IDautoincremental;
             generalStatus = OperatorStatus.active;
+            battery = new OperatorBattery(2000, 4000);  //mAh miliAmperios, 1000mAh = 1 hour use
             load = new OperatorLoad(5, 5); // kilos
-            optimalSpeed = 50; // kilometros/hora
-            location = ""; // actual
+            speed = new OperatorSpeed(50,50); // kilometros/hora
+            location = new Location(barracks.location.latitud, barracks.location.longitud);
         }
     }
 }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TPI
+﻿namespace TPI
 {
     internal class OperatorLoad
     {
@@ -26,18 +20,9 @@ namespace TPI
             return maximum - actual;
         }
 
-        public string CheckLoadToGive()
+        protected int LoadPercentage()
         {
-            string message = (LoadToGive() <= 0) ? "El operador no tiene carga que transferir\n" : "";
-
-            return message;
-        }
-
-        public string CheckLoadToReceive()
-        {
-            string message = (LoadToReceive() == 0) ? "El operador receptor tiene la capacidad de carga llena\n" : "";
-
-            return message;
+            return actual / maximum * 100;
         }
     }
 }
