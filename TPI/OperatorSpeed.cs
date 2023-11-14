@@ -2,19 +2,21 @@
 {
     internal class OperatorSpeed
     {
-        public int actual;
-        public int maximum;
+        public int Actual { get; set; }
+        public int Maximum { get; set; }
 
-        public OperatorSpeed(int actual, int maximum)
+        //public int actual;
+        //public int maximum;
+
+        public OperatorSpeed(int maximum)
         {
-            this.actual = actual;
-            this.maximum = maximum;
+            this.Actual = maximum;
+            this.Maximum = maximum;
         }
 
         protected void ActualSpeedAdjustedByLoad(int loadPercentage)
         {
-            actual = (int)(maximum * 0.05f * (loadPercentage / 10));
-
+            Actual = (int)(Maximum * 0.05f * (loadPercentage / 10));
         }
     }
 }

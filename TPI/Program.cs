@@ -2,24 +2,29 @@
 {
     internal class Program
     {
-        static bool inProgram = true;
-        static bool inOperatorMenu = false;
-        static Map map;
-        static Barracks barrack;
+        static public bool InProgram { get; set; } = true;
+        static public bool InOperatorMenu { get; set; } = false;
+        static public Map Map { get; set; }
+        static public Barrack Barrack { get; set; }
+
+        //static bool inProgram = true;
+        //static bool inOperatorMenu = false;
+        //static Map map;
+        //static Barrack barrack;
 
         static void Main(string[] args)
         {
-            map = new Map();
-            barrack = new Barracks(map);
+            Map = new Map();
+            Barrack = new Barrack(Map);
 
-            while (inProgram)
+            while (InProgram)
             {
-                barrack.ShowMainMenu();
+                Barrack.ShowMainMenu();
                 ApplyMainMenuSelection(Console.ReadLine().Trim().ToLower());
 
-                while (inOperatorMenu)
+                while (InOperatorMenu)
                 {
-                    barrack.selectedOperator.ShowOperatorMenu();
+                    Barrack.selectedOperator.ShowOperatorMenu();
                     ApplyOperatorMenuSelection(Console.ReadLine().Trim().ToLower());
                 }
             }
@@ -30,22 +35,22 @@
             switch (selectedOption)
             {
                 case "1":
-                    barrack.ShowOperatos();
+                    Barrack.ShowOperators();
                     break;
                 case "2":
-                    barrack.ShowOperatosInLocation(map);
+                    Barrack.ShowOperatorsInLocation(Map);
                     break;
                 case "3":
-                    barrack.TotalRecall();
+                    Barrack.TotalRecall();
                     break;
                 case "4":
-                    inOperatorMenu = barrack.IsAnOperatorSelected();
+                    InOperatorMenu = Barrack.IsAnOperatorSelected();
                     break;
                 case "5":
-                    barrack.AddOrRemoveOperator();
+                    Barrack.AddOrRemoveOperator();
                     break;
                 case "s":
-                    inProgram = false;
+                    InProgram = false;
                     Console.WriteLine("Has salido del programa");
                     break;
                 default:
@@ -68,7 +73,7 @@
                     //
                     break;
                 case "s":
-                    inOperatorMenu = false;
+                    InOperatorMenu = false;
                     Console.WriteLine("\nHas salido del Menu operador al menu principal\n");
                     break;
                 default:
@@ -79,7 +84,46 @@
     }
 }
 
+/*
+1) Moverse una cantidad de kilómetros hacia otra localización, consumiendo
+correspondientemente la batería. Nos mencionaron que por cada 10% utilizados de
+carga, los operadores se mueven un 5% más lento
+*/
+/*
+a) Enviarlo a una localización en especial.
+b) indicar retorno a cuartel
+c) cambiar estado a STANDBY - una entidad en STANDBY no puede ser
+utilizada por comandos generales.
+*/
 
+/*
+Vertedero: Sector lleno de basura, al pasar hay una chance de 5% de dañar
+componentes del Operador. Debemos simular esto con un randomizador
+Lago: Un sector inundado, las unidades K9 y M8 no pueden pasar.
+- Vertedero electrónico: Un sector lleno de basura electrónica, no tiene chance
+de causar daño físico al operador pero las ondas electromagnéticas de los
+dispositivos dañan las baterías y reducen su capacidad máxima en un 20%
+permanentemente.
+- Cuartel: operadores pueden recargar batería o ser reparados.
+- Sitio de reciclaje: Un sector dedicado a transformar basura en recursos útiles.
+Estos sitios poseen puntos de recarga para los operadores pero no de
+mantenimiento. Existen un máximo de 5 en todo el terreno.
+
+Actualizar las rutinas de movimiento - no es necesario codear un movimiento
+diagonal.
+A) Generar rutinas para ordenar un operador moverse a una coordenada o localización en especial
+B) Opcional: Programar una rutina que genere una ruta óptima (es decir, sin peligro) y otra que genere una ruta directa.
+5) Nueva funcionalidad:
+A) Orden general: Todos los operadores que no estén ocupados actualmente deben dirigirse al vertedero más cercano y recoger su cantidad máxima de carga para traer al sitio de reciclaje más cercano.
+B) Orden general: Todos los operadores que estén dañados deben volver a un cuartel para mantenimiento.
+C) Cambiar Batería: Reemplaza una batería dañada.
+D) Simular daño: Un operador puede sufrir estos diferentes daños:
+>MOTOR COMPROMETIDO: Reduce su velocidad promedio a la mitad.
+>SERVO ATASCADO: No puede realizar operaciones de carga y descarga física
+>BATERIA PERFORADA: Pierde batería un 500% más rápido en cada operación
+>PUERTO BATERIA DESCONECTADO: No puede realizar operaciones de carga, recarga o transferencia de batería
+>PINTURA RAYADA: No tiene efecto
+*/
 
 
 

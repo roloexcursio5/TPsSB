@@ -2,7 +2,8 @@
 {
     internal class Map
     {
-        public Location[,] latitudLongitud = new Location[100, 100];
+        public Location[,] LatitudLongitud { get; set; } = new Location[100, 100];
+        //public Location[,] latitudLongitud = new Location[100, 100];
 
         public Map()
         {
@@ -15,16 +16,16 @@
             int recyclingSiteCount = 3;
             int electronicDumpCount = 100;
 
-            for (int i = 0; i < latitudLongitud.GetLength(0); i++)
+            for (int i = 0; i < LatitudLongitud.GetLength(0); i++)
             {
-                for (int j = 0; j < latitudLongitud.GetLength(1); j++)
+                for (int j = 0; j < LatitudLongitud.GetLength(1); j++)
                 {
-                    latitudLongitud[i, j] = new Land(i, j);
-                    ((Land)latitudLongitud[i, j]).DefineLandTypeRandomly(barracksCount, recyclingSiteCount, electronicDumpCount);
+                    LatitudLongitud[i, j] = new Land(i, j);
+                    ((Land)LatitudLongitud[i, j]).DefineLandTypeRandomly(barracksCount, recyclingSiteCount, electronicDumpCount);
 
-                    if (((Land)latitudLongitud[i, j]).type == LandType.barracks) barracksCount--;
-                    if (((Land)latitudLongitud[i, j]).type == LandType.recyclingSite) recyclingSiteCount--;
-                    if (((Land)latitudLongitud[i, j]).type == LandType.electronicDump) electronicDumpCount--;
+                    if (((Land)LatitudLongitud[i, j]).LandType == LandType.barracks) barracksCount--;
+                    if (((Land)LatitudLongitud[i, j]).LandType == LandType.recyclingSite) recyclingSiteCount--;
+                    if (((Land)LatitudLongitud[i, j]).LandType == LandType.electronicDump) electronicDumpCount--;
                 }
             }
         }
@@ -43,7 +44,7 @@
             {
                 Location location = new Location(latitud, longitud);
                 if (!CheckLocationWithinMapLimits(location))
-                    message += $"La latitud debe ser un nùmero entre 0 y {latitudLongitud.GetLength(0)} y la longitud debe ser un nùmero entre 0 y {latitudLongitud.GetLength(1)}\n\n";
+                    message += $"La latitud debe ser un nùmero entre 0 y {LatitudLongitud.GetLength(0)} y la longitud debe ser un nùmero entre 0 y {LatitudLongitud.GetLength(1)}\n\n";
             }
 
             if (message != "")
@@ -55,8 +56,8 @@
 
         private bool CheckLocationWithinMapLimits(Location location)
         {
-            bool latitudOK = location.latitud >= 0 && location.latitud < latitudLongitud.GetLength(0);
-            bool longitudOK = location.longitud >= 0 && location.longitud < latitudLongitud.GetLength(1);
+            bool latitudOK = location.Latitud >= 0 && location.Latitud < LatitudLongitud.GetLength(0);
+            bool longitudOK = location.Longitud >= 0 && location.Longitud < LatitudLongitud.GetLength(1);
 
             return latitudOK && longitudOK;
         }

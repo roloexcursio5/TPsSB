@@ -2,22 +2,25 @@
 {
     internal class OperatorBattery
     {
-        public int actual;
-        public int maximum;
+        public int Actual { get; set; }
+        public int Maximum { get; set; }
 
-        public OperatorBattery(int actual, int maximum)
+        //public int actual;
+        //public int maximum;
+
+        public OperatorBattery(int maximum)
         {
-            this.actual = actual;
-            this.maximum = maximum;
+            this.Actual = maximum;
+            this.Maximum = maximum;
         }
 
         public int BatteryToGive()
         {
-            return actual - (int)(maximum * 0.10f);
+            return Actual - (int)(Maximum * 0.10f);
         }
         public int BatteryToReceive()
         {
-            return maximum - actual;
+            return Maximum - Actual;
         }
     }
 }

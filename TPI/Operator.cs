@@ -2,13 +2,19 @@
 {
     internal abstract class Operator
     {
-        public int uniqueID;
-        public OperatorStatus generalStatus;
-        public OperatorBattery battery;  //mAh miliAmperios, 1000mAh = 1 hour use
-        public OperatorLoad load; // kilos
-        public OperatorSpeed speed; // kilometros/hora
-        public Location location; 
-        //protected int maximumDistanceRange;
+        //private int uniqueID;
+        //protected OperatorStatus generalStatus;
+        //protected OperatorBattery battery;  //mAh miliAmperios, 1000mAh = 1 hour use
+        //protected OperatorLoad load; // kilos
+        //protected OperatorSpeed speed; // kilometros/hora
+        //protected Location location;
+
+        public int UniqueID { get; set; }
+        public OperatorStatus GeneralStatus { get; set; }
+        public OperatorBattery Battery { get; set; } //mAh miliAmperios, 1000mAh = 1 hour use
+        public OperatorLoad Load { get; set; } // kilos
+        public OperatorSpeed Speed { get; set; } // kilometros/hora
+        public Location Location { get; set; }
 
         public void ShowOperatorMenu()
         {
@@ -22,15 +28,15 @@
 
 
         /////////// TRANSFERENCIA DE BATERIA
-         protected bool TryTransferBatteryFrom_To(Operator operatorTheOther)
+         protected bool TryTransferBatteryTo(Operator operatorTheOther)
         {
             string message = "";
 
-            if (!location.CheckSameLocation(operatorTheOther))
+            if (!Location.CheckSameLocation(operatorTheOther))
                 message += "Los operadores no están en el mismo lugar\n";
-            if (battery.BatteryToGive() <= 0)
+            if (Battery.BatteryToGive() <= 0)
                 message +=  "El operador se quedó con la reserva, no tiene batería que prestar\n";
-            if (operatorTheOther.battery.BatteryToReceive() == 0) 
+            if (operatorTheOther.Battery.BatteryToReceive() == 0) 
                 message += "El operador receptor tiene la batería llena\n";
 
             if (message != "")
@@ -41,20 +47,20 @@
 
         protected int BatteryTransferAmount(Operator operatorTheOther)
         {
-            int Give = battery.BatteryToGive();
-            int Receive = operatorTheOther.battery.BatteryToReceive();
+            int Give = Battery.BatteryToGive();
+            int Receive = operatorTheOther.Battery.BatteryToReceive();
 
             return Give > Receive ? Receive : Give;
         }
 
-        public void BatteryTransferFrom_To(Operator operatorTheOther)
+        public void BatteryTransferTo(Operator operatorTheOther)
         {
-            if (TryTransferBatteryFrom_To(operatorTheOther))
+            if (TryTransferBatteryTo(operatorTheOther))
             {
                 int batteryTransfered = BatteryTransferAmount(operatorTheOther);
 
-                battery.actual -= batteryTransfered;
-                operatorTheOther.battery.actual += batteryTransfered;
+                Battery.Actual -= batteryTransfered;
+                operatorTheOther.Battery.Actual += batteryTransfered;
 
                 Console.WriteLine($"Se transfirio {batteryTransfered} mAh de bateria de {this} a {operatorTheOther}");
             }
@@ -66,15 +72,15 @@
 
 
          /////////// TRANSFERENCIA DE CARGA
-        protected bool TryTransferLoadFrom_To(Operator operatorTheOther)
+        protected bool TryTransferLoadTo(Operator operatorTheOther)
         {
             string message = "";
 
-            if (!location.CheckSameLocation(operatorTheOther))
+            if (!Location.CheckSameLocation(operatorTheOther))
                 message += "Los operadores no están en el mismo lugar\n";
-            if (load.LoadToGive() <= 0)
+            if (Load.LoadToGive() <= 0)
                 message += "El operador no tiene carga que transferir\n";
-            if (operatorTheOther.load.LoadToReceive() == 0)
+            if (operatorTheOther.Load.LoadToReceive() == 0)
                 message += "El operador receptor tiene la capacidad de carga llena\n";
 
             if(message != "")
@@ -85,21 +91,21 @@
 
         protected int LoadTransferAmount(Operator operatorTheOther)
         {
-            int Give = load.LoadToGive();
-            int Receive = operatorTheOther.load.LoadToReceive();
+            int Give = Load.LoadToGive();
+            int Receive = operatorTheOther.Load.LoadToReceive();
 
             return Give > Receive ? Receive : Give;
         }
 
 
-        public void LoadTransferFrom_To(Operator operatorTheOther)
+        public void LoadTransferTo(Operator operatorTheOther)
         {
-            if (TryTransferLoadFrom_To(operatorTheOther))
+            if (TryTransferLoadTo(operatorTheOther))
             {
                 int loadTransfered = LoadTransferAmount(operatorTheOther);
 
-                load.actual -= loadTransfered;
-                operatorTheOther.load.actual += loadTransfered;
+                Load.Actual -= loadTransfered;
+                operatorTheOther.Load.Actual += loadTransfered;
                 Console.WriteLine($"Se transfirio {loadTransfered} kilos de carga de {this} a {operatorTheOther}");
             }
             else
@@ -110,10 +116,10 @@
 
 
         /////////////////////// ACCIONES DE VOLVER AL CUARTEL
-        public void ReturnToBarrack(Barracks barrack)
+        public void ReturnToBarrack(Barrack barrack)
         {
-            location.latitud = barrack.location.latitud;
-            location.longitud = barrack.location.latitud;
+            Location.Latitud = barrack.Location.Latitud;
+            Location.Longitud = barrack.Location.Latitud;
         }
 
 
@@ -125,18 +131,18 @@
         */
         public void FullyUnload()
         {
-            load.actual = 0;
+            Load.Actual = 0;
         }
 
         protected void FullyBatteryCharge()
         {
-            battery.actual = battery.maximum;
+            Battery.Actual = Battery.Maximum;
         }
         public int MaximumDistanceRangeOrBatteryAutonomy()
         {
-            return battery.actual / 1000 * speed.actual;
-
+            return Battery.Actual / 1000 * Speed.Actual;
         }
+
         protected int DistanceCalculationToDestination(Operator o)
         {
             // A COMPLETAR
@@ -156,8 +162,8 @@
         private int  BatteryConsumption(Operator o)
         {
             int distance = DistanceCalculationToDestination(o);
-            int voyageHours = distance / speed.actual;
-            return o.battery.actual -= voyageHours * 1000;
+            int voyageHours = distance / Speed.Actual;
+            return o.Battery.Actual -= voyageHours * 1000;
         }
 
         protected bool TryVoyage(Operator o)
@@ -177,7 +183,7 @@
             if (TryVoyage(o))
             {
                 int batteryConsumption = BatteryConsumption(o);
-                o.battery.actual -= batteryConsumption;
+                o.Battery.Actual -= batteryConsumption;
                 Console.WriteLine($"Se consumió {batteryConsumption} mAh de bateria por el viaje realizado");
             }
             else
@@ -190,3 +196,4 @@
     }
 }
 
+//protected int maximumDistanceRange;

@@ -2,7 +2,8 @@
 {
     internal class Land : Location
     {
-        public LandType type;
+        public LandType LandType { get; set; }
+        //public LandType type;
 
         public Land(int latitud, int longitud) : base(latitud,longitud)
         {
@@ -14,23 +15,23 @@
             int index = random.Next(0, 101);
 
             if (index == 0 && barracksCount > 0)
-                type = LandType.barracks;
+                LandType = LandType.barracks;
             else if (index <= 1 && index < 5 && recyclingSiteCount > 0)
-                type = LandType.recyclingSite;
+                LandType = LandType.recyclingSite;
             else if (index <= 5 && index < 10 && electronicDumpCount > 0)
-                type = LandType.electronicDump;
+                LandType = LandType.electronicDump;
             else if (index <= 10 && index < 20)
-                type = LandType.wasteland;
+                LandType = LandType.wasteland;
             else if (index <= 20 && index < 30)
-                type = LandType.dump;
+                LandType = LandType.dump;
             else if (index <= 30 && index < 40)
-                type = LandType.lake;
+                LandType = LandType.lake;
             else if (index <= 40 && index < 60)
-                type = LandType.urbanArea;
+                LandType = LandType.urbanArea;
             else if (index <= 60 && index < 80)
-                type = LandType.forest;
+                LandType = LandType.forest;
             else
-                type = LandType.plain;
+                LandType = LandType.plain;
         }
 
     }

@@ -2,23 +2,26 @@
 {
     internal class Location
     {
-        public int latitud;
-        public int longitud;
+        public int Latitud { get; set; }
+        public int Longitud { get; set; }
+
+        //public int latitud;
+        //public int longitud;
 
         public Location(int latitud, int longitud)
         {
-            this.latitud = latitud;
-            this.longitud = longitud;
+            this.Latitud = latitud;
+            this.Longitud = longitud;
         }
 
         public bool CheckSameLocation(Operator operatorTheOther)
         {
-            return (latitud == operatorTheOther.location.latitud && longitud == operatorTheOther.location.longitud);
+            return (Latitud == operatorTheOther.Location.Latitud && Longitud == operatorTheOther.Location.Longitud);
         }
 
         public override string ToString()
         {
-            return $"latitud: {latitud} y longitud: {longitud}";
+            return $"latitud: {Latitud} y longitud: {Longitud}";
         }
     }
 }

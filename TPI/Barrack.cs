@@ -1,13 +1,19 @@
 ﻿namespace TPI
 {
-    internal class Barracks
+    internal class Barrack
     {
-        private int IDautoincremental = 0;
-        public Location location;
-        public List<Operator> operators = new List<Operator>();
-        public Operator selectedOperator;
+        private int IDautoincremental { get; set; } = 0;
+        public Location Location { get; set; }
+        public List<Operator> Operators { get; set; } = new List<Operator>();
+        public Operator selectedOperator { get; set; }
 
-        public Barracks(Map map)
+        //private int IDautoincremental = 0;
+        //public Location location;
+        //public List<Operator> operators = new List<Operator>();
+        //public Operator selectedOperator;
+
+
+        public Barrack(Map map)
         {
             FillBarrackLocation(map);
             CreateAnOperatorRandomly(10);
@@ -15,13 +21,13 @@
 
         private void FillBarrackLocation(Map map)
         {
-            for (int i = 0; i < map.latitudLongitud.GetLength(0); i++)
+            for (int i = 0; i < map.LatitudLongitud.GetLength(0); i++)
             {
-                for (int j = 0; j < map.latitudLongitud.GetLength(1); j++)
+                for (int j = 0; j < map.LatitudLongitud.GetLength(1); j++)
                 {
-                    if (((Land)map.latitudLongitud[i, j]).type == LandType.barracks)
+                    if (((Land)map.LatitudLongitud[i, j]).LandType == LandType.barracks)
                     {
-                        location = new Location(i, j);
+                        Location = new Location(i, j);
                     }
                 }
             }
@@ -39,13 +45,13 @@
 
             for (int i = 0; i < number; i++)
             {
-                int operatorType = random.Next(3);
+                int operatorType = random.Next(0,3);
                 if (operatorType == 0)
-                    operators.Add(new OperatorUAV(UniqueID(), this));
+                    Operators.Add(new OperatorUAV(UniqueID(), this));
                 if (operatorType == 1)
-                    operators.Add(new OperatorK9(UniqueID(), this));
+                    Operators.Add(new OperatorK9(UniqueID(), this));
                 if (operatorType == 2)
-                    operators.Add(new OperatorM8(UniqueID(), this));
+                    Operators.Add(new OperatorM8(UniqueID(), this));
             }
         }
 
@@ -65,18 +71,18 @@ Su eleccion");
         }
 
         /////////Accion 1
-        public void ShowOperatos()
+        public void ShowOperators()
         {
             Console.WriteLine("\nOperadores:");
-            for (int i = 0; i < operators.Count; i++)
+            for (int i = 0; i < Operators.Count; i++)
             {
-                Console.WriteLine($"{operators[i].uniqueID} - {operators[i]} - {operators[i].generalStatus} - {operators[i].location.ToString()}");
+                Console.WriteLine($"{Operators[i].UniqueID} - {Operators[i]} - {Operators[i].GeneralStatus} - {Operators[i].Location.ToString()}");
             }
             Console.WriteLine("\n\n");
         }
 
         /////////Accion 2
-        public void ShowOperatosInLocation(Map map)
+        public void ShowOperatorsInLocation(Map map)
         {
             Console.WriteLine("Indique latitud:\t");
             string latitudInput = Console.ReadLine().Trim().ToLower();
@@ -86,7 +92,7 @@ Su eleccion");
             if (map.CheckMapValidLocation(latitudInput, longitudInput))
             {
                 Location location = new Location(int.Parse(latitudInput), int.Parse(longitudInput));
-                ShowOperatos(location);
+                ShowOperators(location);
             }
             else
             {
@@ -94,14 +100,14 @@ Su eleccion");
             }
         }
 
-        private void ShowOperatos(Location location)
+        private void ShowOperators(Location location)
         {
             string message = "";
             
-            foreach(Operator operatorx in operators)
+            foreach(Operator operatorx in Operators)
             {
-                if (operatorx.location.latitud == location.latitud && operatorx.location.longitud == location.longitud)
-                    message += ($"{operatorx.uniqueID} - {operatorx} - {operatorx.generalStatus}\n");
+                if (operatorx.Location.Latitud == location.Latitud && operatorx.Location.Longitud == location.Longitud)
+                    message += ($"{operatorx.UniqueID} - {operatorx} - {operatorx.GeneralStatus}\n");
             }
 
             if(message != "")
@@ -117,25 +123,25 @@ Su eleccion");
         /////////Accion 3
         public void TotalRecall()
         {
-            foreach(Operator operatorx in this.operators)
+            foreach(Operator operatorx in this.Operators)
             {
                 operatorx.ReturnToBarrack(this);
             }
 
-            Console.WriteLine($"Todos los operadores han retornado a la base localizada en: {location.ToString()}\n");
+            Console.WriteLine($"Todos los operadores han retornado a la base localizada en: {Location.ToString()}\n");
         }
 
         /////////Accion 4
         public bool IsAnOperatorSelected()
         {
-            ShowOperatos();
+            ShowOperators();
 
             Console.WriteLine("Seleccione el ID del operador:\t");
             string operatorIDInput = Console.ReadLine().Trim().ToLower();
             bool validSelection = CheckValidOperatorIDSelection(operatorIDInput);
 
             if (validSelection)
-                selectedOperator = operators[int.Parse(operatorIDInput)];
+                selectedOperator = Operators[int.Parse(operatorIDInput)];
 
             return validSelection;
         }
@@ -147,7 +153,7 @@ Su eleccion");
 
             if (int.TryParse(input, out int operatorID))
             {
-                i = operators.FindIndex(o => o.uniqueID == operatorID);
+                i = Operators.FindIndex(o => o.UniqueID == operatorID);
                 message = i == -1 ? "debe cargar un ID válido" : "";
             }
             else
@@ -162,7 +168,7 @@ Su eleccion");
         /////////Accion 5
         public void AddOrRemoveOperator()
         {
-            ShowOperatos();
+            ShowOperators();
 
             Console.WriteLine("Seleccione el ID del operador a eliminar o escriba NUEVO para crear uno aleatorio:\t");
             string operatorIDInput = Console.ReadLine().Trim().ToLower();
@@ -171,14 +177,14 @@ Su eleccion");
             {
                 CreateAnOperatorRandomly(1);
                 Console.WriteLine("Has creado un nuevo operador");
-                ShowOperatos();
+                ShowOperators();
             }
             else if(CheckValidOperatorIDSelection(operatorIDInput))
             {
-                int i = operators.FindIndex(o => o.uniqueID == int.Parse(operatorIDInput));
-                operators.RemoveAt(i);
+                int i = Operators.FindIndex(o => o.UniqueID == int.Parse(operatorIDInput));
+                Operators.RemoveAt(i);
                 Console.WriteLine($"Has eliminado el operador con ID: {i}");
-                ShowOperatos();
+                ShowOperators();
             }
         }
     }

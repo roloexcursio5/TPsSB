@@ -2,27 +2,30 @@
 {
     internal class OperatorLoad
     {
-        public int actual;
-        public int maximum;
+        public int Actual { get; set; }
+        public int Maximum { get; set; }
 
-        public OperatorLoad(int actual, int maximum)
+        //public int actual;
+        //public int maximum;
+
+        public OperatorLoad(int maximum)
         {
-            this.actual = actual;
-            this.maximum = maximum;
+            this.Actual = 0;
+            this.Maximum = maximum;
         }
 
         public int LoadToGive()
         {
-            return actual;
+            return Actual;
         }
         public int LoadToReceive()
         {
-            return maximum - actual;
+            return Maximum - Actual;
         }
 
         protected int LoadPercentage()
         {
-            return actual / maximum * 100;
+            return Actual / Maximum * 100;
         }
     }
 }
