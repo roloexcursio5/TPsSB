@@ -2,198 +2,229 @@
 {
     internal abstract class Operator
     {
-        //private int uniqueID;
-        //protected OperatorStatus generalStatus;
-        //protected OperatorBattery battery;  //mAh miliAmperios, 1000mAh = 1 hour use
-        //protected OperatorLoad load; // kilos
-        //protected OperatorSpeed speed; // kilometros/hora
-        //protected Location location;
-
         public int UniqueID { get; set; }
-        public OperatorStatus GeneralStatus { get; set; }
+        public EnumOperatorStatus GeneralStatus { get; set; }
         public OperatorBattery Battery { get; set; } //mAh miliAmperios, 1000mAh = 1 hour use
         public OperatorLoad Load { get; set; } // kilos
-        public OperatorSpeed Speed { get; set; } // kilometros/hora
+        //public OperatorSpeed Speed { get; set; } // kilometros/hora
+        public int MaximumSpeed { get; set; } // kilometros/hora
         public Location Location { get; set; }
+        public HashSet<EnumOperatorDamage> OperatorDamages { get; set; }
 
-        public void ShowOperatorMenu()
+        public Operator()
         {
-            Console.WriteLine(@"Seleccione una opción:
-                                        1- Enviar operador a un destino
-                                        2- Retornar operador al cuartel
-                                        3- Cambiar estado del operador a ""STANDBY"" (no se le aplican los comandos generales)
-
-                                        o presione s para salir");
+            SpeedDefinition(this);
+        }
+        private void SpeedDefinition(Operator o)
+        {
+            if (o is OperatorUAV)
+                MaximumSpeed = 50;
+            if (o is OperatorK9)
+                MaximumSpeed = 40;
+            if (o is OperatorM8)
+                MaximumSpeed = 30;
         }
 
-
-        /////////// TRANSFERENCIA DE BATERIA
-         protected bool TryTransferBatteryTo(Operator operatorTheOther)
+        /////////// TRANSFERENCIA
+        protected bool TryTransferElementTo(Location operatorToLocation, OperatorElement operatorElementFrom,  OperatorElement operatorElementTo)
         {
             string message = "";
 
-            if (!Location.CheckSameLocation(operatorTheOther))
+            if (!Map.CheckSameLocation(Location, operatorToLocation))
                 message += "Los operadores no están en el mismo lugar\n";
-            if (Battery.BatteryToGive() <= 0)
-                message +=  "El operador se quedó con la reserva, no tiene batería que prestar\n";
-            if (operatorTheOther.Battery.BatteryToReceive() == 0) 
-                message += "El operador receptor tiene la batería llena\n";
+            if (operatorElementFrom.ElementToGive() <= 0)
+                message += Messages.NotEnoughElementToGiveMessage(operatorElementFrom);
+            if (operatorElementTo.ElementToReceive() == 0)
+                message += Messages.ElementToReceiveFullMessage(operatorElementFrom);
 
             if (message != "")
-                Console.WriteLine(message);
+                message += Messages.ElementToTransferImposibilityMessage(operatorElementFrom);
+
+            CommonFunctions.IfErrorMessageShowIt(message);
 
             return message == "";
         }
 
-        protected int BatteryTransferAmount(Operator operatorTheOther)
+        protected int ElementTransferAmount(OperatorElement operatorElementFrom, OperatorElement operatorElemenTo)
         {
-            int Give = Battery.BatteryToGive();
-            int Receive = operatorTheOther.Battery.BatteryToReceive();
+            int Give = operatorElementFrom.ElementToGive();
+            int Receive = operatorElemenTo.ElementToReceive();
 
             return Give > Receive ? Receive : Give;
         }
 
-        public void BatteryTransferTo(Operator operatorTheOther)
+        public void ElementTransferTo(Operator operatorTo, OperatorElement operatorElementFrom, OperatorElement operatorElementTo)
         {
-            if (TryTransferBatteryTo(operatorTheOther))
+            if (TryTransferElementTo(operatorTo.Location, operatorElementFrom, operatorElementTo))
             {
-                int batteryTransfered = BatteryTransferAmount(operatorTheOther);
+                int elementTransferedAmount = ElementTransferAmount(operatorElementFrom, operatorElementTo);
 
-                Battery.Actual -= batteryTransfered;
-                operatorTheOther.Battery.Actual += batteryTransfered;
+                operatorElementFrom.ElementTransfered(elementTransferedAmount);
+                operatorElementTo.ElementReceived(elementTransferedAmount);
 
-                Console.WriteLine($"Se transfirio {batteryTransfered} mAh de bateria de {this} a {operatorTheOther}");
-            }
-            else
-            {
-                Console.WriteLine("No se pudo transferir la batería");
+                Console.WriteLine($"Se transfirio {elementTransferedAmount} mAh de {operatorElementFrom.ToString().Split(":")[0]} de\n{this}\na\n{operatorTo}");
+
+                OperatorDamages.UnionWith(new Damages().DamageRandomCreator());
+                operatorTo.OperatorDamages.UnionWith(new Damages().DamageRandomCreator());
             }
         }
 
-
-         /////////// TRANSFERENCIA DE CARGA
-        protected bool TryTransferLoadTo(Operator operatorTheOther)
+        /// ACCION DE CARGA
+        public void OperatorLoad(int load)
         {
+            Load.ElementReceived (load);
+            Console.WriteLine($"Cargaste al operador {UniqueID}con {load} kilos. Tu carga actual es de {Load.Actual} kilos, y tu carga máxima es de {Load.Maximum} kilos\n");
+            OperatorDamages.UnionWith(new Damages().DamageRandomCreator());
+        }
+        
+
+        /// RECORRER DISTANCIA 
+        public void MakeVoyage(Location destination)
+        {
+            if (TryVoyage(destination))
+            {
+                Console.Write($"Viajaste de {Location} a {destination}\n\n");
+                Map.JourneyStepsPrint(this, destination, true); // harcodeado trabajar
+                BatteryConsumption(destination);
+                Location = destination;
+                OperatorDamages.UnionWith(new Damages().DamageRandomCreator());
+            }
+        }
+        private bool TryVoyage(Location destination)
+        {
+
+            //int distanceToDestination = -1;
+            //Location destinationLocation = Map.CheckValidLocation(); //return location.Latitud -1 for invalid Location
+
+            //if (destinationLocation.Latitud != -1)
+            //    distanceToDestination = Map.CalculateDistance(Location, destinationLocation);
+            //if (distanceToDestination == 0)
+            //    message += "Ya estás en destino\n";
+            //if (distanceToDestination > Battery.DistanceBatteryAutonomy(Speed))
+            //    message += "No te alcanza la bateria para llegar a destino\n";
+
+            //CommonFunctions.IfErrorMessageShowIt(message);
+
+            //if (message != "")
+            //    distanceToDestination = -1;
+
+            //return distanceToDestination;
+
+            //if (Map.CheckValidLocation(out Location destination) &&
+            
             string message = "";
-
-            if (!Location.CheckSameLocation(operatorTheOther))
-                message += "Los operadores no están en el mismo lugar\n";
-            if (Load.LoadToGive() <= 0)
-                message += "El operador no tiene carga que transferir\n";
-            if (operatorTheOther.Load.LoadToReceive() == 0)
-                message += "El operador receptor tiene la capacidad de carga llena\n";
-
-            if(message != "")
-                Console.WriteLine(message);
+            //if (Map.CheckSameLocation(Location, destination))
+            //    message += "Ya está en destino\n";
+            if (Map.JourneySteps(this, destination, true).Count() == 0)
+                message += "No es posible realizar el viaje por temas del terreno\n";
+            if (Map.JourneySteps(this, destination, true).Count() > BatteryAutonomyDistance()) // un step es un kilometro
+                message += "No te alcanza la bateria para llegar a destino\n\n";
+                
+            if(message != "") Console.WriteLine(message);
 
             return message == "";
         }
-
-        protected int LoadTransferAmount(Operator operatorTheOther)
+        private int BatteryAutonomyDistance()
         {
-            int Give = Load.LoadToGive();
-            int Receive = operatorTheOther.Load.LoadToReceive();
+            return Battery.Actual / 1000 * ActualSpeed();
+        }
 
-            return Give > Receive ? Receive : Give;
+        private int ActualSpeed()
+        {
+            return (int)(MaximumSpeed - 0.05f * (Load.LoadSpaceUsed() / 10));
+        }
+
+        private void BatteryConsumption(Location destination)
+        {
+            Battery.Actual -= (int)((float)Map.JourneySteps(this, destination, true).Count() / ActualSpeed() * 1000); // distance / speed = voyage hours
+        }
+
+        public void SetStatus(EnumOperatorStatus status)
+        {
+            GeneralStatus = status;
         }
 
 
-        public void LoadTransferTo(Operator operatorTheOther)
+        public override string ToString()
         {
-            if (TryTransferLoadTo(operatorTheOther))
+            return $"ID: {UniqueID} - {GetType()} - {GeneralStatus} - {Location} - {Battery} - {Load} - {MaximumSpeed}";
+        }
+
+        public void OperatorFix()
+        {
+            if (TryFix())
             {
-                int loadTransfered = LoadTransferAmount(operatorTheOther);
+                string message = "";
+                if (OperatorDamages.Contains(EnumOperatorDamage.compromisedEngine))
+                    message += "Se ha reparado el motor\n";
+                if (OperatorDamages.Contains(EnumOperatorDamage.stuckServo))
+                    message += "Se ha reparado el servo atascado\n";
+                if (OperatorDamages.Contains(EnumOperatorDamage.perforatedBattery))
+                    message += "Se ha reparado la bateria perforada\n";
+                if (OperatorDamages.Contains(EnumOperatorDamage.disconnectedBatteryPort))
+                    message += "Se ha reparado el puerto de la baterìa desconectado\n";
+                if (OperatorDamages.Contains(EnumOperatorDamage.scratchedPaint))
+                    message += "Se ha vuelto a pintar el operador\n";
+                if (OperatorDamages.Contains(EnumOperatorDamage.reducedMaximumBatteryCapacity))
+                    message += "Se ha incrementado el màximo de la baterìa a su estado original\n";
 
-                Load.Actual -= loadTransfered;
-                operatorTheOther.Load.Actual += loadTransfered;
-                Console.WriteLine($"Se transfirio {loadTransfered} kilos de carga de {this} a {operatorTheOther}");
+                Console.WriteLine(message);
+                OperatorDamages.Clear();
             }
-            else
-            {
-                Console.WriteLine("No se pudo transferir la carga");
-            }
         }
-
-
-        /////////////////////// ACCIONES DE VOLVER AL CUARTEL
-        public void ReturnToBarrack(Barrack barrack)
-        {
-            Location.Latitud = barrack.Location.Latitud;
-            Location.Longitud = barrack.Location.Latitud;
-        }
-
-
-        /// desde acá para abajo falta desarrollar mejor lo de locación y distancia
-        /// RECORRER DISTANCIA
-        /*
- 
-        destino
-        */
-        public void FullyUnload()
-        {
-            Load.Actual = 0;
-        }
-
-        protected void FullyBatteryCharge()
-        {
-            Battery.Actual = Battery.Maximum;
-        }
-        public int MaximumDistanceRangeOrBatteryAutonomy()
-        {
-            return Battery.Actual / 1000 * Speed.Actual;
-        }
-
-        protected int DistanceCalculationToDestination(Operator o)
-        {
-            // A COMPLETAR
-            int locationDeparture = 0;
-            int locationArrival = 0;
-            return locationArrival - locationDeparture;
-        }
-
-        protected bool CheckIfVoyageCanBeMade(Operator o)
-        {
-            int batteryAutonomy = MaximumDistanceRangeOrBatteryAutonomy();
-            int distance = DistanceCalculationToDestination(o);
-
-            return batteryAutonomy > distance;
-        }
-
-        private int  BatteryConsumption(Operator o)
-        {
-            int distance = DistanceCalculationToDestination(o);
-            int voyageHours = distance / Speed.Actual;
-            return o.Battery.Actual -= voyageHours * 1000;
-        }
-
-        protected bool TryVoyage(Operator o)
+        private bool TryFix()
         {
             string message = "";
 
-            if (!CheckIfVoyageCanBeMade(o))
-                message += "No tiene suficiente bateria para llegar a destino\n";
+            if (!(Map.CheckLandType(Location) == EnumLandType.barrack))
+                message += "No estàs en el cuartel para poder realizar reparaciones\n";
 
             Console.WriteLine(message);
 
             return message == "";
         }
 
-        public void MakeVoyageTo(Operator o)
+        public void OperatorBatteryRecharge()
         {
-            if (TryVoyage(o))
+            if (TryBatteryRecharge())
             {
-                int batteryConsumption = BatteryConsumption(o);
-                o.Battery.Actual -= batteryConsumption;
-                Console.WriteLine($"Se consumió {batteryConsumption} mAh de bateria por el viaje realizado");
-            }
-            else
-            {
-                Console.WriteLine("No se pudo transferir la batería");
+                Battery.BatteryRecharge();
             }
         }
 
+        private bool TryBatteryRecharge()
+        {
+            string message = "";
 
+            if (OperatorDamages.Contains(EnumOperatorDamage.perforatedBattery))
+                message += "Se ha reparado la bateria perforada\n";
+            if (OperatorDamages.Contains(EnumOperatorDamage.disconnectedBatteryPort))
+                message += "Se ha reparado el puerto de la baterìa desconectado\n";
+
+            Console.WriteLine(message);
+
+            return message == "";
+        }
+
+
+        /// <summary>
+        /// FAKAT
+        /// </summary>
+        public void BatteryFix()
+        {
+            if (TryFix())
+            {
+                string message = "";
+                if (OperatorDamages.Contains(EnumOperatorDamage.perforatedBattery))
+                    message += "Se ha reparado la bateria perforada\n";
+                if (OperatorDamages.Contains(EnumOperatorDamage.disconnectedBatteryPort))
+                    message += "Se ha reparado el puerto de la baterìa desconectado\n";
+                if (OperatorDamages.Contains(EnumOperatorDamage.reducedMaximumBatteryCapacity))
+                    message += "Se ha incrementado el màximo de la baterìa a su estado original\n";
+
+                Console.WriteLine(message);
+                OperatorDamages.Clear();
+            }
+        }
     }
 }
-
-//protected int maximumDistanceRange;

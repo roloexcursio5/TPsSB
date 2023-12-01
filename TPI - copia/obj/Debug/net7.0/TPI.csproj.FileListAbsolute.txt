@@ -1,0 +1,14 @@
+C:\Users\Ale\Documents\rollandia\Beca\NeorisUTNBA\GitTrabajosPracticosProfesorSB\TPsSB\TPI\bin\Debug\net7.0\TPI.exe
+C:\Users\Ale\Documents\rollandia\Beca\NeorisUTNBA\GitTrabajosPracticosProfesorSB\TPsSB\TPI\bin\Debug\net7.0\TPI.deps.json
+C:\Users\Ale\Documents\rollandia\Beca\NeorisUTNBA\GitTrabajosPracticosProfesorSB\TPsSB\TPI\bin\Debug\net7.0\TPI.runtimeconfig.json
+C:\Users\Ale\Documents\rollandia\Beca\NeorisUTNBA\GitTrabajosPracticosProfesorSB\TPsSB\TPI\bin\Debug\net7.0\TPI.dll
+C:\Users\Ale\Documents\rollandia\Beca\NeorisUTNBA\GitTrabajosPracticosProfesorSB\TPsSB\TPI\bin\Debug\net7.0\TPI.pdb
+C:\Users\Ale\Documents\rollandia\Beca\NeorisUTNBA\GitTrabajosPracticosProfesorSB\TPsSB\TPI\obj\Debug\net7.0\TPI.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Ale\Documents\rollandia\Beca\NeorisUTNBA\GitTrabajosPracticosProfesorSB\TPsSB\TPI\obj\Debug\net7.0\TPI.AssemblyInfoInputs.cache
+C:\Users\Ale\Documents\rollandia\Beca\NeorisUTNBA\GitTrabajosPracticosProfesorSB\TPsSB\TPI\obj\Debug\net7.0\TPI.AssemblyInfo.cs
+C:\Users\Ale\Documents\rollandia\Beca\NeorisUTNBA\GitTrabajosPracticosProfesorSB\TPsSB\TPI\obj\Debug\net7.0\TPI.csproj.CoreCompileInputs.cache
+C:\Users\Ale\Documents\rollandia\Beca\NeorisUTNBA\GitTrabajosPracticosProfesorSB\TPsSB\TPI\obj\Debug\net7.0\TPI.dll
+C:\Users\Ale\Documents\rollandia\Beca\NeorisUTNBA\GitTrabajosPracticosProfesorSB\TPsSB\TPI\obj\Debug\net7.0\refint\TPI.dll
+C:\Users\Ale\Documents\rollandia\Beca\NeorisUTNBA\GitTrabajosPracticosProfesorSB\TPsSB\TPI\obj\Debug\net7.0\TPI.pdb
+C:\Users\Ale\Documents\rollandia\Beca\NeorisUTNBA\GitTrabajosPracticosProfesorSB\TPsSB\TPI\obj\Debug\net7.0\TPI.genruntimeconfig.cache
+C:\Users\Ale\Documents\rollandia\Beca\NeorisUTNBA\GitTrabajosPracticosProfesorSB\TPsSB\TPI\obj\Debug\net7.0\ref\TPI.dll
