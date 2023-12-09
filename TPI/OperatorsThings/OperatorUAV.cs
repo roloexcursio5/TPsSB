@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace TPI
+﻿namespace TPI
 {
     internal class OperatorUAV : Operator//drones voladores de varias hélices
     {

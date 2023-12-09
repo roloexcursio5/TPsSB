@@ -1,4 +1,6 @@
-﻿namespace TPI
+﻿using System.Security.Cryptography;
+
+namespace TPI
 {
     internal abstract class Operator
     {
@@ -6,7 +8,6 @@
         public EnumOperatorStatus GeneralStatus { get; set; }
         public OperatorBattery Battery { get; set; } //mAh miliAmperios, 1000mAh = 1 hour use
         public OperatorLoad Load { get; set; } // kilos
-        //public OperatorSpeed Speed { get; set; } // kilometros/hora
         public int MaximumSpeed { get; set; } // kilometros/hora
         public Location Location { get; set; }
         public HashSet<EnumOperatorDamage> OperatorDamages { get; set; }
@@ -62,7 +63,7 @@
                 operatorElementFrom.ElementTransfered(elementTransferedAmount);
                 operatorElementTo.ElementReceived(elementTransferedAmount);
 
-                Console.WriteLine($"Se transfirio {elementTransferedAmount} mAh de {operatorElementFrom.ToString().Split(":")[0]} de\n{this}\na\n{operatorTo}");
+                Console.WriteLine($"Se transfirio {elementTransferedAmount} de {operatorElementFrom.ToString().Split(":")[0]} de\n{this}\na\n{operatorTo}");
 
                 OperatorDamages.UnionWith(new Damages().DamageRandomCreator());
                 operatorTo.OperatorDamages.UnionWith(new Damages().DamageRandomCreator());
@@ -79,54 +80,43 @@
         
 
         /// RECORRER DISTANCIA 
-        public void MakeVoyage(Location destination)
+        public bool MakeVoyage(Location destination)
         {
-            if (TryVoyage(destination))
+            bool voyageSuccess = false; 
+
+            if (TryVoyage(destination, out Stack<Land> trip))
             {
-                Console.Write($"Viajaste de {Location} a {destination}\n\n");
-                Map.JourneyStepsPrint(this, destination, true); // harcodeado trabajar
-                BatteryConsumption(destination);
+                Console.WriteLine($"Viajaste de {Location} a {destination}");
+                CommonFunctions.PrintList(trip.Reverse().ToList());
+                BatteryConsumption(destination, trip.Count());
                 Location = destination;
                 OperatorDamages.UnionWith(new Damages().DamageRandomCreator());
+                voyageSuccess = true;
             }
+
+            return voyageSuccess;
         }
-        private bool TryVoyage(Location destination)
+        private bool TryVoyage(Location destination, out Stack<Land> trip)
         {
-
-            //int distanceToDestination = -1;
-            //Location destinationLocation = Map.CheckValidLocation(); //return location.Latitud -1 for invalid Location
-
-            //if (destinationLocation.Latitud != -1)
-            //    distanceToDestination = Map.CalculateDistance(Location, destinationLocation);
-            //if (distanceToDestination == 0)
-            //    message += "Ya estás en destino\n";
-            //if (distanceToDestination > Battery.DistanceBatteryAutonomy(Speed))
-            //    message += "No te alcanza la bateria para llegar a destino\n";
-
-            //CommonFunctions.IfErrorMessageShowIt(message);
-
-            //if (message != "")
-            //    distanceToDestination = -1;
-
-            //return distanceToDestination;
-
-            //if (Map.CheckValidLocation(out Location destination) &&
-            
             string message = "";
-            //if (Map.CheckSameLocation(Location, destination))
-            //    message += "Ya está en destino\n";
-            if (Map.JourneySteps(this, destination, true).Count() == 0)
-                message += "No es posible realizar el viaje por temas del terreno\n";
-            if (Map.JourneySteps(this, destination, true).Count() > BatteryAutonomyDistance()) // un step es un kilometro
+
+            trip = Map.Trip(this, destination, true);  // harcodeado el tema de que siempre sea el camino optimo FALTA trabajar para hacerlo optativo
+
+            if (Map.CheckSameLocation(Location, destination))
+                message += "\nYa está en destino\n";
+            if (trip.Count() == 0)
+                message += "Se intentó realizar el viaje pero no se pudo encontrar un camino para realizarlo por temas del terreno\n";
+            if (trip.Count() > BatteryAutonomyDistance()) // un step es un kilometro
                 message += "No te alcanza la bateria para llegar a destino\n\n";
-                
-            if(message != "") Console.WriteLine(message);
+
+            if(message != "")
+                Console.WriteLine (message);
 
             return message == "";
         }
         private int BatteryAutonomyDistance()
         {
-            return Battery.Actual / 1000 * ActualSpeed();
+            return (int)((float)Battery.Actual / 1000 * ActualSpeed());
         }
 
         private int ActualSpeed()
@@ -134,9 +124,11 @@
             return (int)(MaximumSpeed - 0.05f * (Load.LoadSpaceUsed() / 10));
         }
 
-        private void BatteryConsumption(Location destination)
+        private void BatteryConsumption(Location destination, int tripSteps)
         {
-            Battery.Actual -= (int)((float)Map.JourneySteps(this, destination, true).Count() / ActualSpeed() * 1000); // distance / speed = voyage hours
+            int batteryConsumption = (int)((float)tripSteps / ActualSpeed() * 1000); // distance / speed = voyage hours
+            Battery.Actual -= batteryConsumption;
+            Console.WriteLine($"Consumiste {batteryConsumption} mAh de baterìa");
         }
 
         public void SetStatus(EnumOperatorStatus status)
@@ -147,7 +139,7 @@
 
         public override string ToString()
         {
-            return $"ID: {UniqueID} - {GetType()} - {GeneralStatus} - {Location} - {Battery} - {Load} - {MaximumSpeed}";
+            return $"ID: {UniqueID} - {GetType()} - {GeneralStatus} - {Location} - {Battery} - {Load} - Velocidad Máxima: {MaximumSpeed}";
         }
 
         public void OperatorFix()
@@ -207,24 +199,57 @@
         }
 
 
-        /// <summary>
-        /// FAKAT
-        /// </summary>
-        public void BatteryFix()
-        {
-            if (TryFix())
-            {
-                string message = "";
-                if (OperatorDamages.Contains(EnumOperatorDamage.perforatedBattery))
-                    message += "Se ha reparado la bateria perforada\n";
-                if (OperatorDamages.Contains(EnumOperatorDamage.disconnectedBatteryPort))
-                    message += "Se ha reparado el puerto de la baterìa desconectado\n";
-                if (OperatorDamages.Contains(EnumOperatorDamage.reducedMaximumBatteryCapacity))
-                    message += "Se ha incrementado el màximo de la baterìa a su estado original\n";
+        /////////////////////////////
+        /// FALTA
+        //public void BatteryFix()
+        //{
+        //    if (TryFix())
+        //    {
+        //        string message = "";
+        //        if (OperatorDamages.Contains(EnumOperatorDamage.perforatedBattery))
+        //            message += "Se ha reparado la bateria perforada\n";
+        //        if (OperatorDamages.Contains(EnumOperatorDamage.disconnectedBatteryPort))
+        //            message += "Se ha reparado el puerto de la baterìa desconectado\n";
+        //        if (OperatorDamages.Contains(EnumOperatorDamage.reducedMaximumBatteryCapacity))
+        //            message += "Se ha incrementado el màximo de la baterìa a su estado original\n";
 
-                Console.WriteLine(message);
-                OperatorDamages.Clear();
+        //        Console.WriteLine(message);
+        //        OperatorDamages.Clear();
+        //    }
+        //}
+
+
+
+        ////////Funciones para la carga del juego
+        public void CompletoOperadorDesdeBaseSql(int OperatorUniqueID, EnumOperatorStatus OperatorGeneralStatus, int OperatorBattery, int OperatorLoad, int OperatorLocationLatitud, int OperatorLocationLongitud, EnumOperatorDamage OperatorDamages_)
+        {
+            UniqueID = OperatorUniqueID;
+            GeneralStatus = OperatorGeneralStatus;
+            Battery.Actual = OperatorBattery;
+            Load.Actual = OperatorLoad;
+            Location.Latitud = OperatorLocationLatitud;
+            Location.Longitud = OperatorLocationLongitud;
+            OperatorDamages.Add(OperatorDamages_);
+        }
+
+        static public Operator CargoOperadorDesdeBaseSQL(string tipo)
+        {
+            Operator operatorx = new OperatorUAV();
+
+            if (tipo == "OperatorUAV")
+            {
+                operatorx = new OperatorUAV();
             }
+            if (tipo == "OperatorK9")
+            {
+                operatorx = new OperatorK9();
+            }
+            if (tipo == "OperatorM8")
+            {
+                operatorx = new OperatorM8();
+            }
+
+            return operatorx;
         }
     }
 }

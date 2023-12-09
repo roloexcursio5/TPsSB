@@ -9,7 +9,7 @@
         }
         public void Execute()
         {
-            CommonFunctions.ExitMatch(barrack);
+            SaveLoadFunctions.ExitMatch(barrack);
         }
 
         public void ReportPurpose()

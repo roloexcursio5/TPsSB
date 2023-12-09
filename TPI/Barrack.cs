@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection.Emit;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-
-namespace TPI
+﻿namespace TPI
 {
     internal class Barrack
     {
@@ -58,11 +53,15 @@ namespace TPI
                 Console.Write(operatorx.ToString());
                 if (operatorx.OperatorDamages.Count() > 0 && operatorx.GeneralStatus != EnumOperatorStatus.standBy)
                 {
-                    operatorx.MakeVoyage(Location);
-                    operatorx.OperatorFix();
+                    if (Map.CheckSameLocation(Location, operatorx.Location))
+                        operatorx.OperatorFix();
+                    else if (operatorx.MakeVoyage(Location))
+                        operatorx.OperatorFix();
+                    else
+                        Console.WriteLine("\nNo ha podido viajar para que lo reparen");
                 }
                 else
-                    Console.WriteLine("No tiene daños que reparar");
+                    Console.WriteLine("\nNo tiene daños que reparar");
             }
         }
 
@@ -84,11 +83,9 @@ namespace TPI
         {
             ShowOperators();
 
-            bool operatorSelectionOK = OperatorEntryValidation(out int operatorID);
-            bool destinationSelectionOK = Map.LocationEntryValidation(out Location destination);
-
-            if (operatorSelectionOK && destinationSelectionOK)
-                Operators[operatorID].MakeVoyage(destination);
+           if(OperatorEntryValidation(out int operatorID))
+                if(Map.LocationEntryValidation(out Location destination))
+                    Operators[operatorID].MakeVoyage(destination);
         }
 
         /////////Accion 6
@@ -96,13 +93,9 @@ namespace TPI
         {
             ShowOperators();
 
-            bool operatorSelectionOK = OperatorEntryValidation(out int operatorID);
-            bool loadOK = Operators[operatorID].Load.LoadEntryValidation(out int kilosToLoad);
-
-            if (operatorSelectionOK && loadOK)
-            {
-                Operators[operatorID].OperatorLoad(kilosToLoad);
-            }
+            if(OperatorEntryValidation(out int operatorID))
+                if(Operators[operatorID].Load.LoadEntryValidation(out int kilosToLoad))
+                    Operators[operatorID].OperatorLoad(kilosToLoad);
         }
 
 
@@ -112,10 +105,8 @@ namespace TPI
             ShowOperators();
 
             if (OperatorEntryValidation(out int operatorID))
-            {
-                Operators[operatorID].MakeVoyage(Location);
-                Console.WriteLine($"El operador {Operators[operatorID]}a retornado al cuartel\n");
-            }
+                if(Operators[operatorID].MakeVoyage(Location))
+                    Console.WriteLine($"El operador {Operators[operatorID]}a retornado al cuartel\n");
         }
 
 
@@ -125,20 +116,7 @@ namespace TPI
             if (CommonFunctions.UserInputYesOrNo("Si desea crearlo automáticamente presione s"))
                 CreateAnOperatorRandomly(1);
             else
-            {
-                Array operatorType = Enum.GetValues(typeof(EnumOperatorTypes));
-                CommonFunctions.PrintList(operatorType.ToString().ToList());
-                if (Enum.TryParse(CommonFunctions.UserInput("Ingrese el tipo del operador que desea crear"), true, out EnumOperatorTypes userOperatorTypeSeleccion))
-                {
-                    CreateAnOperatorSpecifically(userOperatorTypeSeleccion);
-                }
-                else
-                {
-                    Console.WriteLine("Por errores en la especificación del typo de operador se crea uno automáticamente");
-                    CreateAnOperatorRandomly(1);
-                }
-
-            }
+                CreateAnOperatorSpecifically();
         }               
 
         /////////Accion 9
@@ -190,6 +168,32 @@ namespace TPI
                 Operators[operatorIDFrom].ElementTransferTo(Operators[operatorIDTo], Operators[operatorIDFrom].Load, Operators[operatorIDTo].Load);
         }
 
+        ///////// Accion 14 - Demora bastante por las combinaciones que debe buscar. Funciona pero FALTA mejorar.
+        public void TotalrecyclingCycle()
+        {
+            foreach(Operator operatorx in Operators)   // FALTA chequear tema de daños para realizar estas acciones
+            {
+                Console.Write(operatorx.ToString());
+                Location closestDump = Map.ClosestLandTypeLocation(operatorx, EnumLandType.dump);
+                Console.WriteLine("el operador va a realizar el viaje");
+                operatorx.MakeVoyage(closestDump);
+                Console.WriteLine("el operador va a cargar");
+                operatorx.OperatorLoad(operatorx.Load.ElementToReceive());
+                Console.WriteLine("el operador va a buscar el lugar de reciclaje màs cerca");
+                Location closestrecyclingSite = Map.ClosestLandTypeLocation(operatorx, EnumLandType.recyclingSite);
+                Console.WriteLine("va a intentar realizar el viaje");
+                operatorx.MakeVoyage(closestrecyclingSite);
+                Console.WriteLine("el operador va a descargar");
+                operatorx.Load.UnLoad();
+                Console.WriteLine("descargò");
+            }
+            
+        }
+   
+
+
+
+
         //////////////GENERALES
         static public int UniqueID()
         {
@@ -213,14 +217,29 @@ namespace TPI
             Console.WriteLine($"Has creado {number} operador/es nuevo/s\n");
         }
 
-        public void CreateAnOperatorSpecifically(EnumOperatorTypes operatorx)
+
+
+        public void CreateAnOperatorSpecifically()
         {
-                if (operatorx == EnumOperatorTypes.UAV)
-                    Operators.Add(new OperatorUAV());
-                if (operatorx == EnumOperatorTypes.K9)
-                    Operators.Add(new OperatorK9());
-                if (operatorx == EnumOperatorTypes.M8)
-                    Operators.Add(new OperatorM8());
+            CommonFunctions.PrintList(Enum.GetValues(typeof(EnumOperatorTypes)).Cast<EnumOperatorTypes>().ToList());
+
+            if (Enum.TryParse(CommonFunctions.UserInput("Ingrese el tipo del operador que desea crear"), true, out EnumOperatorTypes userOperatorTypeSeleccion))
+                CreateASpecificOperator(userOperatorTypeSeleccion);
+            else
+            {
+                Console.WriteLine("Por errores en la especificación del typo de operador se crea uno automáticamente");
+                CreateAnOperatorRandomly(1);
+            }
+        }
+
+        private void CreateASpecificOperator(EnumOperatorTypes operatorx)
+        {
+            if (operatorx == EnumOperatorTypes.UAV)
+                Operators.Add(new OperatorUAV());
+            if (operatorx == EnumOperatorTypes.K9)
+                Operators.Add(new OperatorK9());
+            if (operatorx == EnumOperatorTypes.M8)
+                Operators.Add(new OperatorM8());
             Console.WriteLine($"Has creado un operador {operatorx} nuevo\n");
         }
 
@@ -241,5 +260,11 @@ namespace TPI
 
             return message == "";
         }
+
+        public string ToString(int i)
+        {
+            return $"{AutoIncrementalID},{Location.Latitud},{Location.Longitud},'{Operators[i].GetType().ToString().Split(".")[1]}',{Operators[i].UniqueID},'{Operators[i].GeneralStatus}',{Operators[i].Battery.Actual},{Operators[i].Load.Actual},{Operators[i].Location.Latitud},{Operators[i].Location.Longitud},'scratchedPaint'";  //hardcodeado mejorar para uso de SQL
+        }
+
     }
 }

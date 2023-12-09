@@ -1,6 +1,4 @@
-﻿using System.Xml;
-
-namespace TPI
+﻿namespace TPI
 {
     internal abstract class OperatorElement
     {
@@ -27,7 +25,7 @@ namespace TPI
         public void FullCapacity()
         {
             Actual = Maximum;
-            Console.WriteLine($"{GetType().ToString().Split(".")[1]} completa");
+            Console.WriteLine($"\n{GetType().ToString().Split(".")[1]} completa");
         }
         public int ElementToGive()
         {

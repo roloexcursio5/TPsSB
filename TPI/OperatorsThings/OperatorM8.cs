@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace TPI
+﻿namespace TPI
 {
     internal class OperatorM8 : Operator //semi-humanoides de carga
     {

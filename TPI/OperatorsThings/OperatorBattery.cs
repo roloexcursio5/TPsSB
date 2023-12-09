@@ -7,7 +7,7 @@
         }
         public override void ElementActualValueDefinition()
         {
-            Actual = Maximum/2;
+            Actual = Maximum/2;   // se pone para iniciar a mitad de baterìa para probar carga y transferencia
         }
 
         public void BatteryRecharge()

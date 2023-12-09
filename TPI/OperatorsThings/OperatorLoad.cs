@@ -7,7 +7,7 @@
         }
         public override void ElementActualValueDefinition()
         {
-            Actual = 2;
+            Actual = 2;   // para probar cosas
         }
         public int LoadSpaceUsed()
         {
@@ -30,7 +30,7 @@
             return message == "";
         }
 
-        public void UnLoade()
+        public void UnLoad()
         {
             Actual = 0;
         }

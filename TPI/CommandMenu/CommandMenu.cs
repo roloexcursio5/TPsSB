@@ -1,6 +1,4 @@
-﻿using System.Net.Http.Headers;
-
-namespace TPI
+﻿namespace TPI
 {
     internal class CommandMenu
     {
@@ -33,6 +31,9 @@ namespace TPI
                 new CommandOperatorStatusAvailable(barrack),
                 new CommandOperatorTransferBattery(barrack),
                 new CommandOperatorTransferLoad(barrack),
+                new CommandRecyclingCycle(barrack),
+                new CommandQuery(),
+                new CommandMapPrint(),
                 new CommandExit(barrack)
             };
     }

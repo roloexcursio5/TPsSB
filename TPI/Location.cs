@@ -11,11 +11,6 @@
             this.Longitud = Longitud;
         }
 
-        public bool CheckSameLocation(Location locationToCompare)
-        {
-            return (Latitud == locationToCompare.Latitud && Longitud == locationToCompare.Longitud);
-        }
-
         public override string ToString()
         {
             return $"latitud: {Latitud} y longitud: {Longitud}";

@@ -7,6 +7,8 @@
         {
         }
 
+
+        // se pensò para jugar con las probabilidades y cantidades, pero es mejorable FALTA
         public void DefineLandTypeRandomly(ref int barracksCount, ref int recyclingSiteCount, ref int electronicDumpCount)
         {
             Random random = new Random();
@@ -29,11 +31,11 @@
             }
             else if (index <= 10 && index < 20)
                 LandType = EnumLandType.wasteland;
-            else if (index <= 20 && index < 30)
+            else if (index == 20 || index == 21)
                 LandType = EnumLandType.dump;
-            else if (index <= 30 && index < 40)
+            else if (index <= 22 && index < 30)
                 LandType = EnumLandType.lake;
-            else if (index <= 40 && index < 60)
+            else if (index <= 30 && index < 60)
                 LandType = EnumLandType.urbanArea;
             else if (index <= 60 && index < 80)
                 LandType = EnumLandType.forest;
